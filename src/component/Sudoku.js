@@ -128,7 +128,7 @@ const Sudoku = () => {
                         textAlign: "center",
                         borderRight: colIndex === 2 || colIndex === 5 ? "2px solid black" : "1px solid lightgrey",
                         borderBottom: rowIndex === 2 || rowIndex === 5 ? "2px solid black" : "1px solid lightgrey",
-                        color: color === "Valid Sudoku" ? "green" : color === "Invalid Sudoku" ? "red" : "black",
+                        borderColor: color === "black" ? "black" : "red",
                       }}
                       
                     value={col === 0 ? "" : col} 
