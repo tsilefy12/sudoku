@@ -1,155 +1,97 @@
-import { Box, FormLabel, Stack, TextField } from "@mui/material";
-import { useEffect, useState } from "react";
+import { Box, FormLabel, Stack, TextField, Dialog, DialogTitle, DialogActions, Button } from "@mui/material";
+import { useState } from "react";
 
 const Sudoku = () => {
-  
-      function isValid(board, row, col, num) {
-        for (let i = 0; i < 9; i++) {
-          if (board[row][i] === num || board[i][col] === num) {
-            return false;
-          }
-        }
-    
-        const startRow = Math.floor(row / 3) * 3;
-        const startCol = Math.floor(col / 3) * 3;
-        for (let i = 0; i < 3; i++) {
-          for (let j = 0; j < 3; j++) {
-            if (board[startRow + i][startCol + j] === num) {
-              return false;
-            }
-          }
-        }
-    
-        return true;
-      }
-    
-      function fillBoard(board) {
-        for (let row = 0; row < 9; row++) {
-          for (let col = 0; col < 9; col++) {
-            if (board[row][col] === 0) {
-              const numbers = [1, 2, 3, 4, 5, 6, 7, 8, 9].sort(() => Math.random() - 0.5);
-    
-              for (let num of numbers) {
-                if (isValid(board, row, col, num)) {
-                  board[row][col] = num;
-    
-                  if (fillBoard(board)) {
-                    return true;
-                  }
-    
-                  board[row][col] = 0;
-                }
-              }
-              return false;
-            }
-          }
-        }
-        return true;
-      }
+  const TableauInit = [
+    [null, null, null, null, null, 6, 4, null, null],
+    [3, 5, null, 9, null, null, null, null, null],
+    [null, null, null, null, 1, null, 9, null, 5],
+    [null, null, 9, null, null, null, null, null, null],
+    [null, 3, 7, null, 6, null, 1, 9, null],
+    [8, 6, null, null, null, null, null, null, null],
+    [null, 4, null, 7, 2, null, null, null, null],
+    [null, 8, 1, 6, 5, null, null, null, 3],
+    [null, null, null, null, null, null, null, null, 6]
+  ];
 
-      function removeNumbers(board, numEmptyCells) {
-        let count = numEmptyCells;
-        while (count > 0) {
-          const row = Math.floor(Math.random() * 9);
-          const col = Math.floor(Math.random() * 9);
+  const [temp, setTemp] = useState(TableauInit);
+  const [color, setColor] = useState("black");
+
+  const addNumberAtPosition = (i, j, value) => {
+    if (temp[i].includes(value)) {
+      setColor("red");
+      return;
+    }
     
-          if (board[row][col] !== 0) {
-            board[row][col] = 0;
-            count--;
-          }
+    for (let row = 0; row < temp.length; row++) {
+      if (temp[row][j] === value) {
+        setColor("red");
+        return;
+      }
+    }
+
+    const startRow =Math.floor(i / 3) * 3;
+    const startCol = Math.floor(j / 3) * 3;
+    console.log(startRow, startCol);
+    for (let row = startRow; row < startRow + 3; row++) {
+      for (let col = startCol; col < startCol + 3; col++) {
+        if (temp[row][col] === value) {
+          setColor("red");
+          return;
         }
       }
-    
-      function generateSudoku(initialFilledCells) {
-        const board = Array(9).fill(null).map(() => Array(9).fill(0));
-        fillBoard(board);
-        removeNumbers(board, 81 - initialFilledCells);
-        return board;
-      }
-    
-      const [board, setBoard] = useState(generateSudoku(30)); 
-      const isValidRow = (board) => {
-        return board.every(row => {
-          const nums = row.filter(num => num !== 0); 
-          return nums.length === new Set(nums).size;
-        });
-      };
-      
-      const isValidCol = (board) => {
-        for (let col = 0; col < 9; col++) {
-          const nums = [];
-          for (let row = 0; row < 9; row++) {
-            if (board[row][col] !== 0) nums.push(board[row][col]);
-          }
-          if (nums.length !== new Set(nums).size) return false;
-        }
-        return true;
-      };
-    
-      const isValidBlock = (board) => {
-        for (let i = 0; i < 9; i += 3) {
-          for (let j = 0; j < 9; j += 3) {
-            const nums = [];
-            for (let x = 0; x < 3; x++) {
-              for (let y = 0; y < 3; y++) {
-                if (board[i + x][j + y] !== 0) nums.push(board[i + x][j + y]);
-              }
-            }
-            if (nums.length !== new Set(nums).size) return false;
-          }
-        }
-        return true;
-      };
-      
-      const isValidSudoku = (board) => {
-        return isValidRow(board) && isValidCol(board) && isValidBlock(board);
-      };
-      const [color, setColor] = useState("balck")
-        useEffect(() => {
-          if (isValidSudoku(board)) {
-            setColor("black");
-          } else {
-            setColor("red");
-          }
-        }, [board]);
-      
-      return (
-        <Stack spacing={2} justifyContent={"center"} alignItems={"center"}>
-          <FormLabel sx={{ color: color ==="black" ? "black": "red", fontWeight: "bold", fontSize: 20 }}>Sudoku</FormLabel>
-          <Box>
-            {board.map((row, rowIndex) => (
-              <Box key={rowIndex} display="flex">
-                {row.map((col, colIndex) => (
-                  <TextField
-                    key={colIndex}
-                    sx={{
-                        width: 50,
-                        height: 50,
-                        textAlign: "center",
-                        borderRight: colIndex === 2 || colIndex === 5 ? "2px solid black" : "1px solid lightgrey",
-                        borderBottom: rowIndex === 2 || rowIndex === 5 ? "2px solid black" : "1px solid lightgrey",
-                        borderColor: color === "black" ? "black" : "red",
-                      }}
-                      
-                    value={col === 0 ? "" : col} 
-                    onChange={(e) => {
-                      const value = Number(e.target.value) || 0;
-                      const newBoard = board.map((r, i) =>
-                        r.map((c, j) => (i === rowIndex && j === colIndex ? value : c))
-                      );
-                      setBoard(newBoard);
-                    }}
-                    inputProps={{
-                      maxLength: 1,
-                      style: { textAlign: "center" },
-                    }}
-                  />
-                ))}
-              </Box>
+    }
+    setColor("black");
+    const updatedTab = temp.map((row, rowIndex) =>
+      row.map((col, colIndex) =>
+        rowIndex === i && colIndex === j ? value : col
+      )
+    );
+    setTemp(updatedTab);
+  };
+
+
+  return (
+    <Stack spacing={2} justifyContent={"center"} alignItems={"center"}>
+      <FormLabel
+        sx={{
+          color: color,
+          fontWeight: "bold",
+          fontSize: 20,
+        }}
+      >
+        Sudoku
+      </FormLabel>
+      <Box>
+        {temp.map((row, rowIndex) => (
+          <Box key={rowIndex} display="flex">
+            {row.map((col, colIndex) => (
+              <TextField
+                key={colIndex}
+                sx={{
+                  width: 50,
+                  height: 50,
+                  textAlign: "center",
+                  borderRight: colIndex === 2 || colIndex === 5 ? "2px solid black" : "",
+                  borderBottom: rowIndex === 2 || rowIndex === 5 ? "2px solid black" : "",
+                  color: color,
+                }}
+                value={col || ""}
+                onChange={(e) => {
+                  const value = parseInt(e.target.value) || null;
+                  addNumberAtPosition(rowIndex, colIndex, value);
+                }}
+                inputProps={{
+                  maxLength: 1,
+                  style: { textAlign: "center" },
+                }}
+              />
             ))}
           </Box>
-        </Stack>
-      );
-    };
-    export default Sudoku;
-    
+        ))}
+      </Box>
+    </Stack>
+  );
+};
+
+export default Sudoku;
