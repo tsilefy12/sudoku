@@ -74,7 +74,7 @@ const Sudoku = () => {
                   textAlign: "center",
                   borderRight: colIndex === 2 || colIndex === 5 ? "2px solid black" : "",
                   borderBottom: rowIndex === 2 || rowIndex === 5 ? "2px solid black" : "",
-                  color: color,
+                  borderColor: color,
                 }}
                 value={col || ""}
                 onChange={(e) => {
