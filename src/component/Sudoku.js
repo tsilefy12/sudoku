@@ -1,5 +1,6 @@
-import { Box, FormLabel, Stack, TextField, Dialog, DialogTitle, DialogActions, Button } from "@mui/material";
-import { useEffect, useState } from "react";
+import { Box, FormLabel, Stack, TextField,Button, } from "@mui/material";
+import ArrowBack from "@mui/icons-material/ArrowBack";
+import {  useState } from "react";
 
 const Sudoku = () => {
   
@@ -61,7 +62,7 @@ const Sudoku = () => {
   }
  
   const [color, setColor] = useState("black");
-
+  const [tempHistory, setTempHistory] = useState([]);
   const addNumberAtPosition = (i, j, value) => {
     if (temp[i].includes(value)) {
       setColor("red");
@@ -93,20 +94,43 @@ const Sudoku = () => {
       )
     );
     setTemp(updatedTab);
+    setTempHistory((prev) => [...prev, temp]);
+ // Résultat du jeu
+  let cases = true;
+
+  for (let row = 0; row < updatedTab.length; row++) {
+    for (let col = 0; col < updatedTab[row].length; col++) {
+      if (updatedTab[row][col] === null) {
+        cases = false;
+        break;
+      }
+    }
+    if (!cases) break;
+  }
+  if (cases) {
+    return alert("Le jeu est terminé et vous avez gagné !");
+  } 
+  };
+  
+  const retour = () => {
+    setTemp(tempHistory.pop());
   };
 
 
   return (
     <Stack spacing={2} justifyContent={"center"} alignItems={"center"}>
-      <FormLabel
-        sx={{
-          color: color,
-          fontWeight: "bold",
-          fontSize: 20,
-        }}
-      >
-        Sudoku
-      </FormLabel>
+      <Stack direction={"row"} gap={2} justifyContent={"space-between"} alignItems={"center"}>
+        <Button variant="contained" onClick={retour} sx={{backgroundColor: "GrayText"}} startIcon={<ArrowBack />}>Retour</Button>
+        <FormLabel
+          sx={{
+            color: color,
+            fontWeight: "bold",
+            fontSize: 20,
+          }}
+        >
+          Sudoku
+        </FormLabel>
+      </Stack>
       <Stack direction={"row"} gap={2}>
        <Stack direction={"column"} gap={2}>
           <FormLabel>Niveau : </FormLabel>
@@ -130,9 +154,10 @@ const Sudoku = () => {
                 }}
                 value={col || ""}
                 onChange={(e) => {
-                  const value = parseInt(e.target.value) || null;
+                  const value = e.target.value === "" ? null : parseInt(e.target.value);
                   addNumberAtPosition(rowIndex, colIndex, value);
                 }}
+                
                 inputProps={{
                   maxLength: 1,
                   style: { textAlign: "center" },
