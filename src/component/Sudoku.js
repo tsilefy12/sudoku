@@ -78,7 +78,7 @@ const Sudoku = () => {
 
     const startRow =Math.floor(i / 3) * 3;
     const startCol = Math.floor(j / 3) * 3;
-    console.log(startRow, startCol);
+
     for (let row = startRow; row < startRow + 3; row++) {
       for (let col = startCol; col < startCol + 3; col++) {
         if (temp[row][col] === value) {
@@ -95,7 +95,7 @@ const Sudoku = () => {
     );
     setTemp(updatedTab);
     setTempHistory((prev) => [...prev, temp]);
- // Résultat du jeu
+
   let cases = true;
 
   for (let row = 0; row < updatedTab.length; row++) {
@@ -111,7 +111,7 @@ const Sudoku = () => {
     return alert("Le jeu est terminé et vous avez gagné !");
   } 
   };
-  
+
   const retour = () => {
     setTemp(tempHistory.pop());
   };
